@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "truepositive-test-task"
+version = "0.1.0"
+description = ""
+authors = ["valiaisnotprogrammer <ValiaChernykh@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.0.4"
+djangorestframework = "^3.15.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
