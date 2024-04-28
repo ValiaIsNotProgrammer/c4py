@@ -1,9 +1,19 @@
-from django.db import models
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime
 
 
-class UserProfile(models.Model):
-    user_id = models.IntegerField(primary_key=True)
-    language = models.CharField(max_length=10, choices=[('en', 'English'), ('ru', 'Russian')])
+class BotUser(BaseModel):
+    id: int
+    language: str
 
-    def __str__(self):
-        return f'{self.user_id} - {self.language}'
+
+class Screenshot(BaseModel):
+    user_id: int
+    image: str
+    uploaded_at: Optional[datetime]
+    url: str
+
+
+
+

@@ -1,0 +1,18 @@
+{
+  "ru": {
+    "greeting": "\uD83D\uDC4B\uD83C\uDFFB Привет! Меня зовут Imager.\nЯ - Бот для создания веб-скриншотов.\nЧтобы получить скриншот - отправьте URL адрес сайта. Например, wikipedia.org\n\n• С помощью бота вы можете проверять подозрительные ссылки. (Айпилоггеры, фишинговые веб-сайты, скримеры и т.п)\n\n• Вы также можете добавить меня в свои чаты, и я смогу проверять ссылки, которые отправляют пользователи.\n\nImager использует chromedriver.\nРаботает с протоколами http, https.\nИ находится в постоянной разработке.",
+    "add_to_chat_button": "Добавить бота в свой чат",
+    "change_language_button": "\uD83C\uDDF7\uD83C\uDDFAВыбор языка",
+    "change_language_text": "\uD83D\uDC69\uD83C\uDFFC\u200D\uD83D\uDCBB Выбери свой язык:",
+    "request_to_screenshot": "⚡\uFE0FЗапрос отправлен на сайт.",
+    "screenshot_answer": "⏳ \u2060 Сайт: {}\nВремя обработки: {} секунд"
+  },
+  "en": {
+    "greeting": "\uD83D\uDC4B\uD83C\uDFFB Hello! My name is Imager.\nI'm a bot for creating web screenshots.\nTo get a screenshot, send me a website URL. For example, wikipedia.org\n\n• With the bot, you can check suspicious links. (IP loggers, phishing websites, screamers, etc.)\n\n• You can also add me to your chats, and I will be able to check links sent by users.\n\nImager uses chromedriver.\nWorks with http, https protocols.\nAnd is in constant development.",
+    "add_to_chat_button": "Add bot to the your chat",
+    "change_language_button": "\uD83C\uDDEC\uD83C\uDDE7Change language",
+    "change_language_text": "\uD83D\uDC69\uD83C\uDFFC\u200D\uD83D\uDCBB Choose your language:",
+    "request_to_screenshot": "⚡\uFE0FRequest sent to website.",
+    "screenshot_answer": "⏳ \u2060 Website: {}\nTime of processing: {} seconds"
+  }
+}
