@@ -9,6 +9,7 @@ def get_language_from(button_name: str) -> str:
 
 
 async def download_file(url: str):
+    print(url)
     if "127.0.0.1" in url:
         url = url.replace("http://127.0.0.1:8000", "/home/valiaisnotprogrammer/PycharmProjects/truepositive_test_task/api")
         return open(url[:-1], "rb").read()

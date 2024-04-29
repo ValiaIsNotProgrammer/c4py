@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 import aiohttp
 from aiohttp import ClientResponse
@@ -50,17 +50,37 @@ class BaseConnector:
             logger.error("Model response from endpoint: {}, error: {}".format(endpoint, response.json()))
             raise ValueError(f'Unexpected response status {response.status}, reason: {response.reason}')
 
+    async def models_or_nan_from(self, response: ClientResponse) -> Union[List[BotUser], List[BotUser], None]:
+        endpoint = response.real_url.path.split("/")[1]
+        logger.trace("Model response from endpoint: {}".format(endpoint))
+        models = []
+        if response.status in [200, 201]:
+            data = await response.json()
+            for model in data:
+                logger.trace("Model response: {}".format(data))
+                models.append(self.model_endpoints[endpoint](**model))
+            return models
+        elif response.status == 400:
+            logger.error("Model response from endpoint: {}, error: {}".format(endpoint, response.json()))
+            return None
+        else:
+            logger.error("Model response from endpoint: {}, error: {}".format(endpoint, response.json()))
+            raise ValueError(f'Unexpected response status {response.status}, reason: {response.reason}')
+
+
     def get_full_url(self, url: str) -> str:
         full_url = f"{self.backend_url}{url}/"
         logger.trace("Full url: {}".format(full_url))
         return full_url
 
     @log_request_data
-    async def get(self, endpoint: str, model: Union[BotUser, Screenshot] = None) -> Union[BotUser, Screenshot, None]:
+    async def get(self, endpoint: str, model: Union[BotUser, Screenshot] = None, is_list=False) -> Union[BotUser, Screenshot, None, List[BotUser], List[BotUser]]:
         params = self.get_dict_from(model) if model else {}
         url = self.get_full_url(endpoint)
         async with aiohttp.ClientSession(headers={'Content-Type': 'application/json'}) as session:
             async with session.get(url, params=params) as response:
+                if is_list:
+                    return await self.models_or_nan_from(response)
                 return await self.model_or_nan_from(response)
 
     @log_request_data
@@ -83,7 +103,6 @@ class BaseConnector:
     @staticmethod
     def get_dict_from(model: Union[BotUser, Screenshot]) -> dict:
         return model.dict()
-
 
 
 class APIConnector(BaseConnector):
@@ -146,7 +165,18 @@ class APIConnector(BaseConnector):
             logger.info("Full screenshot URL: {}".format(screenshot.image))
         return screenshot
 
+    async def get_whois(self, url: str) -> Union[dict, None]:
+        logger.info("Getting whois: {}".format(url))
+        endpoint = self.ENDPOINTS["screenshot"]
+        screenshots = await self.get(endpoint, is_list=True)
+        return self.get_whois_from(screenshots, url)
 
+    @staticmethod
+    def get_whois_from(screenshots: List[Screenshot], url) -> Union[dict, None]:
+        for screenshot in screenshots:
+            if url == screenshot.url:
+                return screenshot.whois
+        raise KeyError("No whois found for url: {}".format(url))
 
 
 api_connector = APIConnector()

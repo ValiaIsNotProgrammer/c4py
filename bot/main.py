@@ -1,16 +1,16 @@
 import asyncio
+import sys
 
 from loguru import logger
 
-from bot.misc import dp, bot
-from bot.handlers import commands
+from bot.misc import bot
 
-dp.include_router(commands.router)
-logger.info("Router included")
 
 async def main():
-    logger.info("Starting bot")
-    await dp.start_polling(bot)
+    logger.info("Router included")
+    logger.remove()
+    logger.add(sys.stderr, level="TRACE")
+    await bot.start()
 
     # if USE_WEBHOOK:
     #     executor.start_webhook(**WEBHOOK_SERVER)

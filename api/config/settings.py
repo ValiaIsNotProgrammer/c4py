@@ -68,8 +68,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api.config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# CELERY_BROKER_URL = 'rabbitmq://localhost:6379/0'
+# CELERY_RESULT_BACKEND = 'rabbitmq://localhost:6379/0'
+REQUEST_SCREENSHOT_TRY_COUNT = 5
+
 
 DATABASES = {
     'default': {
@@ -119,7 +121,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-MEDIA_URL = '/media/screenshots/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 

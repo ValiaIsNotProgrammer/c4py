@@ -35,7 +35,7 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('', include(router.urls)),
-    path(rf'media/screenshots/(?P<path>.+)/$', ScreenshotImageViewSet.as_view(), name='media')
+    # path(rf'media/screenshots/(?P<path>.+)/$', ScreenshotImageViewSet.as_view(), name='media')
     # path(MEDIA_URL+"/<path:path>/", serve_media, name='serve_media'),
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)
 
@@ -45,4 +45,4 @@ urlpatterns = [
 #             'document_root': MEDIA_ROOT,
 #         }),
 #     ]
-print(urlpatterns)
+# print(urlpatterns)

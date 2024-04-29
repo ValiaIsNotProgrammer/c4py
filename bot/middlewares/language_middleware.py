@@ -1,4 +1,4 @@
-from aiogram import types, BaseMiddleware
+from aiogram import BaseMiddleware
 from typing import Callable, Dict, Any, Awaitable
 
 from aiogram.types import Message
@@ -6,6 +6,8 @@ from loguru import logger
 
 from bot.utils.connector import api_connector
 
+
+# TODO: оптимизировать запросы к БД через API (можно создать класс Repo или использовать кеш)
 
 class LanguageMiddleware(BaseMiddleware):
     async def __call__(
@@ -23,6 +25,7 @@ class LanguageMiddleware(BaseMiddleware):
 
         return await handler(event, data)
 
-    async def on_pre_process_callback_query(self, callback_query: types.CallbackQuery, data: dict):
-        pass
+
+    def __str__(self):
+        return "LanguageMiddleware"
 
