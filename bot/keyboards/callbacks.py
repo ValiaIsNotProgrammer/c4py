@@ -15,3 +15,4 @@ class InlineCallback(CallbackData, prefix="inline_callback"):
     button_name: str
     url: Optional[str] = None
     # last_msg_id: Optional[int] = None
+

@@ -1,19 +1,18 @@
-from typing import Union
+from typing import Union, Any
 
 from aiogram import types, Router
 from aiogram.filters import Command
-from aiogram.types import BufferedInputFile
-from time import time
-
+from aiogram.exceptions import AiogramError
+from aiogram.types import ErrorEvent
 
 from loguru import logger
 
 from bot.keyboards.keyboards import get_greeting_keyboard, get_screenshot_keyboard, get_group_link_detection_keyboard
 from bot.utils.translate import get_answers
 from bot.utils.connector import api_connector
-from bot.utils.extra import download_file
+from bot.utils.extra import download_file, get_valid_url, get_png_from
 from .filters import URLFilter, URLGroupFilter
-# from ..misc import router
+from aiogram.dispatcher.dispatcher import Dispatcher
 
 router = Router(name=__name__)
 last_message: Union[types.Message, None] = None
@@ -37,26 +36,23 @@ async def get_group_url(msg: types.Message, language: str):
 @router.message(URLFilter())
 async def get_screenshot(msg: types.Message, language: str, refresh_url: str = None):
     logger.info("Getting screenshot from {}".format(msg.from_user.id))
-    url = refresh_url if refresh_url else msg.text
-    logger.trace(f"URL: {url}")
-    start_time = time()
-    screenshot_model = await api_connector.create_screenshot(msg.from_user.id, url)
-    logger.trace(f"Screenshot model: {screenshot_model}")
-    screenshot_bytes = await download_file(screenshot_model.image)
-    screenshot_file = BufferedInputFile(screenshot_bytes, filename=f"{screenshot_model.image}.png")
-    end_time = time() - start_time
-    logger.success(f"Screenshot took {end_time}")
-    requests_msg = await msg.answer(get_answers(language, "request_to_screenshot"))
-    requests_msg_id = requests_msg.message_id
-    await msg.bot.delete_message(msg.chat.id, requests_msg_id)
+    url = get_valid_url(refresh_url if refresh_url else msg.text)
+    screenshot_model, total_time = await api_connector.create_screenshot(msg.from_user.id, url, get_time=True)
+    screenshot_png = await get_png_from(screenshot_model)
+    request_msg = await msg.answer(get_answers(language, "request_to_screenshot"))
+    await msg.bot.delete_message(msg.chat.id, request_msg.message_id)
     global last_message
-    last_message = await msg.bot.send_photo(msg.chat.id, screenshot_file,
-                             caption=get_answers(language, "screenshot_answer").format(url, end_time),
+    last_message = await msg.bot.send_photo(msg.chat.id, screenshot_png,
+                             caption=get_answers(language, "screenshot_answer").format(url, total_time),
                              reply_markup=get_screenshot_keyboard(language, screenshot_model))
-                             # reply_to_message_id=msg.message_id)
 
 
-
+@router.errors()
+async def handle_my_custom_exception(ee: ErrorEvent) -> Any:
+    logger.error(ee)
+    # if "Resulted callback data is too long" in ee.exception:
+    #     await ee.update.message.answer()
+    await ee.update.message.answer(text="Something went wrong. Please try again later or change your URL")
 
 
 

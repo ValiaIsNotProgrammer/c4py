@@ -8,6 +8,7 @@ from ..model import Screenshot
 
 # TODO: решить проблему длины передаваемого URL в callback_data (<64)
 
+
 def get_greeting_keyboard(language) -> InlineKeyboardMarkup:
     inline_kb = InlineKeyboardBuilder()
     add_chat_button = InlineKeyboardButton(text=get_answers(language, "add_to_chat_button"),
