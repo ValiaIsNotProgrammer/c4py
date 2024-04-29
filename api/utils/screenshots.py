@@ -2,8 +2,8 @@ import datetime
 from typing import Union
 
 import celery
-from PIL.ImageFile import ImageFile
 from celery import shared_task
+from django.core.files.images import ImageFile
 from loguru import logger
 from selenium import webdriver
 import io
@@ -58,20 +58,12 @@ class WebScreenshotMaker:
 
     def _make_screenshot(self, url: str) -> bytes: #AsyncResult]:
         logger.info("Getting screenshot from {}".format(url))
-        if not self.is_valid(url):
-            logger.error("Corrected URL to {}".format(url))
-            url = self.to_correct(url)
         with self.__enter__():
             self.driver.get(url)
             logger.info("Driver get url {}".format(url))
             screenshot = self.driver.get_screenshot_as_png()
             logger.success("Screenshot made at {}".format(url))
             return screenshot
-
-    def is_valid(self, url: str) -> bool:
-        if "https://" in url:
-            return True
-        return False
 
     def __enter__(self):
         logger.info("Entering Web Screenshot Maker")
@@ -84,14 +76,6 @@ class WebScreenshotMaker:
         if self.driver:
             self.driver.quit()
         logger.info("Exiting Web Screenshot Maker")
-
-    def to_correct(self, url: str) -> str:
-        if self.is_valid(url):
-            return url
-        url = "https://" + url
-        if "www." in url:
-            url = url.replace("www.", "")
-        return url
 
     @staticmethod
     def get_domain(url: str) -> str:

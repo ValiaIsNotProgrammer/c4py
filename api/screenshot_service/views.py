@@ -1,13 +1,7 @@
-import io
 import json
 import os
-from datetime import datetime
 
-from django.core.files.base import ContentFile
-from django.core.files.images import ImageFile
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.http import FileResponse, HttpResponse
-from django.shortcuts import get_object_or_404
 from loguru import logger
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -15,14 +9,13 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveMode
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import GenericViewSet
-
+from rest_framework.exceptions import APIException
 
 from api.utils.screenshots import screenshot_maker
 
 from .models import Screenshot
 from .serializers import ScreenshotSerializer
 from ..config import settings
-from ..users.models import User
 from api.utils.whois import whois
 
 
@@ -32,7 +25,7 @@ class ScreenshotViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, Retrie
     serializer_class = ScreenshotSerializer
     lookup_field = "image"
 
-    def _validate_request_data(self, data: dict):
+    def __validate_request_data(self, data: dict):
         if not data["url"]:
             logger.error(f'Screenshot URL not found')
             raise ValidationError({'error': 'URL is required'})
@@ -40,7 +33,8 @@ class ScreenshotViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, Retrie
             logger.error(f'User ID not found')
             raise ValidationError({'error': 'User ID is required'})
 
-    def _get_exist(self, screenshot: Screenshot) -> Response:
+    #TODO: добавить исключение ALREADYEXIST
+    def __get_exist(self, screenshot: Screenshot) -> Response:
         logger.success(f'Screenshot already exists, CACHED')
         data = screenshot.__dict__
         del data['_state']
@@ -48,16 +42,13 @@ class ScreenshotViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, Retrie
         return Response(data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
-        raw_url = request.data.get('url')
-        url = screenshot_maker.to_correct(raw_url)
-        # TODO: сделать так, чтобы API принимал только валидные ссылки. Обработку и корректировку URL должен делать клиент
-        self._validate_request_data(request.data)
-        screenshot = self.queryset.filter(url=url).first()
+        self.__validate_request_data(request.data)
+        screenshot = self.queryset.filter(url=request.data.get('url')).first()
         if screenshot:
-            return self._get_exist(screenshot)
-        image = screenshot_maker.get_screenshot(url)
-        whois_json = json.dumps(whois.get_valid_whois_data(url))
-        serializer = ScreenshotSerializer(data={"url": url,
+            return self.__get_exist(screenshot)
+        image = screenshot_maker.get_image(request.data.get('url'))
+        whois_json = json.dumps(whois.get_valid_whois_data(request.data.get('url')))
+        serializer = ScreenshotSerializer(data={"url": request.data.get('url'),
                                                 "image": image,
                                                 "user": request.data.get('id'),
                                                 "whois": whois_json})
@@ -69,8 +60,6 @@ class ScreenshotViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, Retrie
         else:
             logger.error(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 
 # TODO: исправить локальную передачу файлов по url
