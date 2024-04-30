@@ -1,4 +1,5 @@
 import datetime
+import time
 from typing import Union
 
 import celery
@@ -50,9 +51,7 @@ class WebScreenshotMaker:
         response = self.get_screenshot(url)
         if type(response) != bytes:
             return response
-        domain = screenshot_maker.get_domain(url)
-        filename = "screenshots/" + domain + ".png"
-        image = ImageFile(io.BytesIO(response), name=filename)
+        image = ImageFile(io.BytesIO(response))
         logger.info(f'Screenshot is got')
         return image
 
@@ -93,6 +92,16 @@ class WebScreenshotMaker:
             temp_image.close()
 
     @staticmethod
+    def get_name_for_image(data: dict) -> str:
+        logger.info(f"Get image for {data['url']}")
+        domain = screenshot_maker.get_domain(data['url'])
+        date_object = datetime.datetime.strptime(data['uploaded_at'], "%Y-%m-%d %H:%M:%S")
+        uploaded_at = time.mktime(date_object.timetuple())
+        name = f'{uploaded_at}_{data["user"]}_{domain}.png'
+        logger.info("Edit image name to '{}'. UNIX time used".format(name))
+        return name
+
+    @staticmethod
     @shared_task
     async def _make_screenshot_with_worker(screenshot_url: str) -> bytes:
         logger.info(f"Making screenshot {screenshot_url}")
@@ -104,7 +113,6 @@ class WebScreenshotMaker:
             elif result.failed():
                 logger.error(f"Screenshot failed: {result.info}; {result.get()}")
                 return result.get()  # TODO: нормально обработать ошибку в случае неудачи
-
 
     def __get_webdriver_exception(self, ex):
         ex.msg = ex.msg.split('\n')[0]
