@@ -9,7 +9,7 @@ from ..model import Screenshot
 # TODO: решить проблему длины передаваемого URL в callback_data (<64)
 
 
-def get_greeting_keyboard(language) -> InlineKeyboardMarkup:
+def get_greeting_keyboard(language: str) -> InlineKeyboardMarkup:
     inline_kb = InlineKeyboardBuilder()
     add_chat_button = InlineKeyboardButton(text=get_answers(language, "add_to_chat_button"),
                                            callback_data=InlineCallback(button_name="add_to_chat_button").pack(),
@@ -32,14 +32,13 @@ def get_language_keyboard() -> InlineKeyboardMarkup:
     return inline_kb.as_markup()
 
 
-def get_screenshot_keyboard(language, screenshot_model: Screenshot, last_msg_id: int=None) -> InlineKeyboardMarkup:
+def get_screenshot_keyboard(language: str, user_msg_id: int = None) -> InlineKeyboardMarkup:
     inline_kb = InlineKeyboardBuilder()
     refresh_button = InlineKeyboardButton(text=get_answers(language, "refresh_button"),
                                           callback_data=InlineCallback(button_name="refresh_button",
-                                                                       url=screenshot_model.url.replace("https://", "www.")).pack())
+                                                                       user_msg_id=user_msg_id).pack())
     whois_button = InlineKeyboardButton(text=get_answers(language, "whois_button"),
-                                        callback_data=InlineCallback(button_name="whois_button",
-                                                                     url=screenshot_model.url.replace("https://", "www.")).pack())
+                                        callback_data=InlineCallback(button_name="whois_button").pack())
     inline_kb.add(refresh_button, whois_button)
     inline_kb.adjust(repeat=True)
     logger.trace("Inline keyboard: {}".format(inline_kb.buttons))
@@ -50,8 +49,7 @@ def get_group_link_detection_keyboard(language, url: str) -> InlineKeyboardMarku
     inline_kb = InlineKeyboardBuilder()
     url = url.replace("https://", "www.")
     url_chat_button = InlineKeyboardButton(text=get_answers(language, "group_requests_to_screenshot_button"),
-                                        callback_data=InlineCallback(button_name="gs_button",
-                                                                     url=url).pack())
+                                        callback_data=InlineCallback(button_name="gs_button").pack())
     inline_kb.add(url_chat_button)
     inline_kb.adjust(repeat=True)
     logger.trace("Inline keyboard: {}".format(inline_kb.buttons))
