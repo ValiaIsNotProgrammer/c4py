@@ -9,10 +9,9 @@ class InlineCallback(CallbackData, prefix="inline_callback"):
     Класс для передачи метаданных для bot.handlers.keyboard_handlers
 
     button_name - парамент который передается в аргумент callback_data
-    url - парамент который позволяет передать прошлый использованный URL в аргумент callback_data (Предназначен для функциональности кнопки refresh)
+    last_msg_id - парамент, который позволяет сослаться на последнее сообщение связанное с конкретным URL
 
     """
     button_name: str
-    url: Optional[str] = None
-    # last_msg_id: Optional[int] = None
+    user_msg_id: Optional[int] = None
 
