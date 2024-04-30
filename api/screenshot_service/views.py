@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 
@@ -9,7 +10,6 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin, RetrieveMode
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.exceptions import APIException
 
 from api.utils.screenshots import screenshot_maker
 
@@ -17,7 +17,6 @@ from .models import Screenshot
 from .serializers import ScreenshotSerializer
 from ..config import settings
 from api.utils.whois import whois
-
 
 
 class ScreenshotViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin):
@@ -32,12 +31,16 @@ class ScreenshotViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, Retrie
         if not data["id"]:
             logger.error(f'User ID not found')
             raise ValidationError({'error': 'User ID is required'})
+        if not data["message_id"]:
+            logger.error(f'Message ID not found')
+            raise ValidationError({'error': 'Message ID is required'})
 
     #TODO: добавить исключение ALREADYEXIST
     def __get_exist(self, screenshot: Screenshot) -> Response:
         logger.success(f'Screenshot already exists, CACHED')
         data = screenshot.__dict__
         del data['_state']
+        data['image'] = "/media/" + data['image']
         logger.warning("data['_state'] was deleted")
         return Response(data, status=status.HTTP_200_OK)
 
@@ -47,11 +50,14 @@ class ScreenshotViewSet(GenericViewSet, CreateModelMixin, ListModelMixin, Retrie
         if screenshot:
             return self.__get_exist(screenshot)
         image = screenshot_maker.get_image(request.data.get('url'))
+        if type(image) == str:
+            return Response(data={'error': image}, status=status.HTTP_400_BAD_REQUEST)
         whois_json = json.dumps(whois.get_valid_whois_data(request.data.get('url')))
         serializer = ScreenshotSerializer(data={"url": request.data.get('url'),
                                                 "image": image,
                                                 "user": request.data.get('id'),
-                                                "whois": whois_json})
+                                                "whois": whois_json,
+                                                "message_id": request.data.get('message_id')})
         logger.info("Screenshot model created")
         if serializer.is_valid():
             serializer.save()
