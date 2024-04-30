@@ -3,7 +3,7 @@ from typing import Union, Any
 from aiogram import types, Router
 from aiogram.filters import Command
 from aiogram.exceptions import AiogramError
-from aiogram.types import ErrorEvent
+from aiogram.types import ErrorEvent, InputMediaPhoto
 
 from loguru import logger
 
@@ -14,8 +14,11 @@ from bot.utils.extra import download_file, get_valid_url, get_png_from
 from .filters import URLFilter, URLGroupFilter
 from aiogram.dispatcher.dispatcher import Dispatcher
 
+from ..model import Screenshot
+
 router = Router(name=__name__)
-last_message: Union[types.Message, None] = None
+last_message = None
+last_message_url = None
 
 
 @router.message(Command("start"))
@@ -31,31 +34,28 @@ async def get_group_url(msg: types.Message, language: str):
                      reply_markup=get_group_link_detection_keyboard(language, msg.text))
 
 
-# TODO: сделать обработку ошибки неправильного URL с ответа API
-# TODO: сделать обработчик URL, чтобы корректировать URL на стороне клиента, а не сервера
 @router.message(URLFilter())
 async def get_screenshot(msg: types.Message, language: str, refresh_url: str = None):
     logger.info("Getting screenshot from {}".format(msg.from_user.id))
-    url = get_valid_url(refresh_url if refresh_url else msg.text)
-    screenshot_model, total_time = await api_connector.create_screenshot(msg.from_user.id, url, get_time=True)
+    r = await msg.answer(get_answers(language, "request_to_screenshot"), disable_web_page_preview=True)
+    global last_message_url
+    last_message_url = get_valid_url(refresh_url if refresh_url else msg.text)
+    screenshot_model, total_time = await api_connector.create_screenshot(msg.from_user.id, last_message_url, msg.message_id, get_time=True)
     screenshot_png = await get_png_from(screenshot_model)
-    request_msg = await msg.answer(get_answers(language, "request_to_screenshot"))
-    await msg.bot.delete_message(msg.chat.id, request_msg.message_id)
+    await msg.bot.delete_message(msg.chat.id, r.message_id)
     global last_message
-    last_message = await msg.bot.send_photo(msg.chat.id, screenshot_png,
-                             caption=get_answers(language, "screenshot_answer").format(url, total_time),
-                             reply_markup=get_screenshot_keyboard(language, screenshot_model))
+    last_message = await msg.answer_photo(photo=screenshot_png,
+                                          caption=get_answers(language, "screenshot_answer").format(last_message_url, total_time),
+                                          reply_markup=get_screenshot_keyboard(language, user_msg_id=msg.message_id))
 
 
-@router.errors()
-async def handle_my_custom_exception(ee: ErrorEvent) -> Any:
-    logger.error(ee)
-    # if "Resulted callback data is too long" in ee.exception:
-    #     await ee.update.message.answer()
-    await ee.update.message.answer(text="Something went wrong. Please try again later or change your URL")
-
-
-
+@router.error()
+async def handle_error(event: ErrorEvent):
+    logger.error("Error handling {}".format(event.exception))
+    user_id = event.update.message.from_user.id
+    language = await api_connector.get_language(user_id)
+    await event.update.message.answer(get_answers(language, "error_url"))
+    logger.warning("Error was handled with user id: {}".format(user_id))
 
 
 
