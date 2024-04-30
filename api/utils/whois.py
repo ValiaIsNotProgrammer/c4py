@@ -14,10 +14,14 @@ class WHOIS:
 
     def get_valid_whois_data(self, url):
         whois_data = self.get_whois(url)
+        try:
+            uploated_date = whois_data["updated_date"][0].strftime("%Y-%m-%d %H:%M:%S")
+        except TypeError:
+            uploated_date = whois_data["updated_date"].strftime("%Y-%m-%d")
         valid_whois_data = {
             "domain_name": whois_data["domain_name"],
             "registrar": whois_data["registrar"],
-            "updated_date": whois_data["updated_date"][0].strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_date": uploated_date,
             "country": whois_data["country"],
         }
         return valid_whois_data
