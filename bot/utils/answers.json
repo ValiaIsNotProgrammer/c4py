@@ -13,7 +13,8 @@
     "domain_name": "Домен",
     "registrar": "Регистрация",
     "updated_date": "Дата создания",
-    "country": "Страна"
+    "country": "Страна",
+    "error_url": "Получена ошибка. Пожалуйста, повторите попытку с другой ссылкой"
   },
   "en": {
     "greeting": "\uD83D\uDC4B\uD83C\uDFFB Hello! My name is Imager.\nI'm a bot for creating web screenshots.\nTo get a screenshot, send me a website URL. For example, wikipedia.org\n\n• With the bot, you can check suspicious links. (IP loggers, phishing websites, screamers, etc.)\n\n• You can also add me to your chats, and I will be able to check links sent by users.\n\nImager uses chromedriver.\nWorks with http, https protocols.\nAnd is in constant development.",
@@ -29,7 +30,8 @@
     "domain_name": "Domain",
     "registrar": "registrar",
     "updated_date": "Updated date",
-    "country": "Country"
+    "country": "Country",
+    "error_url": "An error occurred. Please try again with another ULR."
 
   }
 }
