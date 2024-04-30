@@ -1,5 +1,5 @@
 from aiogram import F, Router
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 from loguru import logger
 
 from bot.handlers.commands import start, get_screenshot
@@ -47,9 +47,9 @@ async def get_group_screenshot(query: CallbackQuery, callback_data: InlineCallba
 
 @router.callback_query(InlineCallback.filter(F.button_name == "whois_button"))
 async def whois(query: CallbackQuery, callback_data: InlineCallback, language: str):
-    url = callback_data.url.replace("www.", "https://")
     logger.info("Getting whois from", query.from_user.id)
-    whois = await api_connector.get_whois(url)
+    from bot.handlers.commands import last_message_url
+    whois = await api_connector.get_whois(last_message_url)
     text = f"""
     WHOIS
     {get_answers(language, "domain_name")}: {whois["domain_name"]}
@@ -62,8 +62,7 @@ async def whois(query: CallbackQuery, callback_data: InlineCallback, language: s
 
 @router.callback_query(InlineCallback.filter(F.button_name == "refresh_button"))
 async def refresh(query: CallbackQuery, callback_data: InlineCallback, language: str):
-    url = callback_data.url.replace("www.", "https://")
     logger.info("Refreshing screenshot from", query.from_user.id)
-    from bot.handlers.commands import last_message
+    from bot.handlers.commands import last_message, last_message_url
     await query.bot.delete_message(query.message.chat.id, last_message.message_id)
-    await get_screenshot(query.message, language, refresh_url=url)
+    await get_screenshot(query.message, language, refresh_url=last_message_url)
