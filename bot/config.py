@@ -1,7 +1,5 @@
-
 import os
 from dotenv import load_dotenv
-from loguru import logger
 
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')

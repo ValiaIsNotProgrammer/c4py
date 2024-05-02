@@ -1,21 +1,25 @@
-from aiogram import Bot, Dispatcher, Router
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import Bot, Dispatcher
 from loguru import logger
 
-from bot.config import BOT_TOKEN
-from bot.middlewares.create_user_middleware import CreateUserMiddleware
-from bot.middlewares.language_middleware import LanguageMiddleware
-from bot.handlers import commands
-from bot.handlers import keyboard_handlers
+from config import BOT_TOKEN
+from middlewares.create_user_middleware import CreateUserMiddleware
+from middlewares.language_middleware import LanguageMiddleware
+from handlers import commands
+from handlers import keyboard_handlers
 
 
 class BotSetup:
+    """
+    Класс для инициализации бота
+    Все необходимые данные находяться в .env файле
+    """
     def __init__(self, token):
         self.bot = Bot(token=token, parse_mode='HTML')
         self.dp = Dispatcher()
         self.is_setup = False
 
     def setup(self):
+        "Метод для подключения маршрутов и middlewares"
         self.dp.include_router(commands.router)
         self.dp.include_router(keyboard_handlers.router)
         logger.info(f'Bot wag get routers: {self.dp.sub_routers}')
@@ -26,6 +30,7 @@ class BotSetup:
         logger.info(f"Callbacks was get middlewares: {self.dp.callback_query.middleware.__dict__['_middlewares']}")
 
     async def start(self):
+        "Метод для запуска бота"
         if not self.is_setup:
             logger.info("Bot setup started")
             self.setup()

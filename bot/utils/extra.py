@@ -1,32 +1,20 @@
 from time import time
 from typing import Union
-from urllib.parse import urlparse
 
 from aiogram.client.session import aiohttp
 from aiogram.types import BufferedInputFile
 from loguru import logger
 
-from bot.model import Screenshot
-
-
-def timer(func):
-    async def wrapper(*args, **kwargs) -> Union[Screenshot, tuple[Screenshot, time]]:
-        start_time = time()
-        result = await func(*args, **kwargs)
-        end_time = round(time() - start_time, 2)
-        logger.info(f"[{func.__name__}] {end_time} seconds")
-        if kwargs.get("get_time", None):
-            return result, end_time
-        return result
-
-    return wrapper
+from model import Screenshot
 
 
 def get_language_from(button_name: str) -> str:
+    "Метод для получения языка из названия кнопки"
     return button_name[:2]
 
 
 async def download_file(url: str):
+    "Метод для загрузки скриншота по указаному url"
     logger.info(f"Downloading {url}")
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -40,6 +28,7 @@ async def download_file(url: str):
 
 
 async def get_png_from(screenshot: Screenshot) -> BufferedInputFile:
+    "Метод для получения нужного формата png для API TELEGRAM из Screenshot.image"
     logger.info("Getting PNG from screenshot {}".format(screenshot))
     screenshot_bytes = await download_file(screenshot.image)
     png = BufferedInputFile(screenshot_bytes, filename=f"{screenshot.image}.png")
@@ -48,6 +37,7 @@ async def get_png_from(screenshot: Screenshot) -> BufferedInputFile:
 
 
 def get_valid_url(raw_url: str) -> str:
+    "Метод для получения валидного URL, полученным пользователем"
     logger.info("Getting raw url {}".format(raw_url))
     url = to_correct(raw_url)
     logger.info("Returning url {}".format(url))
@@ -55,6 +45,7 @@ def get_valid_url(raw_url: str) -> str:
 
 
 def to_correct(url: str) -> str:
+    "Метод для корректировки URL, полученным пользователем"
     if is_valid(url):
         return url
     url = "https://" + url
@@ -64,26 +55,11 @@ def to_correct(url: str) -> str:
 
 
 def is_valid(url: str) -> bool:
-        if "https://" in url or "http://" in url:
-            return True
-        return False
+    "Метод для валидации корректности url, полученным пользователем"
+    if "https://" in url or "http://" in url:
+        return True
+    return False
 
-
-# urls = [
-#     "http://www.example.com",
-#     "https://example.com",
-#     "http://subdomain.example.com/page",
-#     "https://www.example.com/path/to/page.html",
-#     "http://example.com:8080"
-#     "www.example.com",
-#     "example.com",
-#     "ftp://example.com",
-#     "http://example",
-#     "http://example..com",
-#     "http://.example.com",
-#     "http://example..com/page",
-#     "http://example.com:8080/path/to/page.html"
-# ]
 
 
 

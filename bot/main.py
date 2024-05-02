@@ -3,10 +3,11 @@ import sys
 
 from loguru import logger
 
-from bot.misc import bot
+from misc import bot
 
 
 async def main():
+    "Функция для запуска бота"
     logger.info("Router included")
     logger.remove()
     logger.add(sys.stderr, level="TRACE")

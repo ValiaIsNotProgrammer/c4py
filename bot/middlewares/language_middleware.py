@@ -4,12 +4,17 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram.types import Message
 from loguru import logger
 
-from bot.utils.connector import api_connector
+from utils.connector import api_connector
 
 
 # TODO: оптимизировать запросы к БД через API (можно создать класс Repo или использовать кеш)
 
 class LanguageMiddleware(BaseMiddleware):
+    """
+    Middleware для получения языка пользователя
+    По-умолчанию, если пользователь еще не создан, выберается язык DEFAULT_BOT_LANGUAGE
+    Срабатывает перед всеми обработчиками
+    """
     async def __call__(
         self,
         handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
