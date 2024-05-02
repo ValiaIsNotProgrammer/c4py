@@ -1,21 +1,19 @@
 from pathlib import Path
 import os
-# from dotenv import load_dotenv
-#
-#
-# load_dotenv()
-# WORK_DIR = os.getenv('WORK_DIR')
+from dotenv import load_dotenv
+from loguru import logger
+
+load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = 'django-insecure-n-6&69=l33q(kr#0xfcc4qmzp2m=w@tx#!r2sqw$ir2m#ogde2'
-
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,8 +24,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
-    'api.screenshot_service',
-    'api.users',
+    'screenshot_service',
+    'users',
+    'stats',
 ]
 
 MIDDLEWARE = [
@@ -40,8 +39,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'api.config.urls'
-APPEND_SLASH=False
+ROOT_URLCONF = 'config.urls'
+APPEND_SLASH = False
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -65,29 +64,23 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.config.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# CELERY_BROKER_URL = 'rabbitmq://localhost:6379/0'
-# CELERY_RESULT_BACKEND = 'rabbitmq://localhost:6379/0'
 REQUEST_SCREENSHOT_TRY_COUNT = 5
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'truepositive',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
-
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+logger.info("Django Postgresql settings loaded {}".format(DATABASES))
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -105,9 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -117,17 +107,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-print(MEDIA_URL)
-print(MEDIA_ROOT)
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
