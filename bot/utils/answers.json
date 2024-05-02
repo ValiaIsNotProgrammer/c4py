@@ -14,7 +14,10 @@
     "registrar": "Регистрация",
     "updated_date": "Дата создания",
     "country": "Страна",
-    "error_url": "Получена ошибка. Пожалуйста, повторите попытку с другой ссылкой"
+    "error_url": "Получена ошибка. Пожалуйста, повторите попытку с другой ссылкой",
+    "admin_greeting": "Это админская панель для просмотра статистики",
+    "stats_button": "Статистика",
+    "stats_text": "Всего пользователей - {}\nВсего скриншотов - {}\nСреднее время обработки скриншота - {} сек\nСреднее кол-во скриншотов на пользователя - {}\nКол-во скриншотов за сегодня - {}"
   },
   "en": {
     "greeting": "\uD83D\uDC4B\uD83C\uDFFB Hello! My name is Imager.\nI'm a bot for creating web screenshots.\nTo get a screenshot, send me a website URL. For example, wikipedia.org\n\n• With the bot, you can check suspicious links. (IP loggers, phishing websites, screamers, etc.)\n\n• You can also add me to your chats, and I will be able to check links sent by users.\n\nImager uses chromedriver.\nWorks with http, https protocols.\nAnd is in constant development.",
@@ -31,7 +34,10 @@
     "registrar": "registrar",
     "updated_date": "Updated date",
     "country": "Country",
-    "error_url": "An error occurred. Please try again with another ULR."
+    "error_url": "An error occurred. Please try again with another ULR.",
+    "admin_greeting": "It's admin panel for view stats",
+    "stats_button": "Statistics",
+    "stats_text": "Total users - {}\nTotal screenshots - {}\nAverage screenshot processing time - {} sec\nAverage number of screenshots per user - {}\nNumber of screenshots today - {}"
 
   }
 }
