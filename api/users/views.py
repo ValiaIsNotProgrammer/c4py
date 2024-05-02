@@ -6,8 +6,8 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveMode
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from .models import User
-from .serializers import UserSerializer
+from users.models import User
+from users.serializers import UserSerializer
 
 
 class UserViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
@@ -16,6 +16,7 @@ class UserViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateMo
 
     @swagger_auto_schema(responses={404: 'User not found'})
     def retrieve(self, request, *args, **kwargs):
+        "Метод переопределен для явного логирования"
         logger.info("Getting user {}".format(request.user.username))
         try:
             instance = self.get_object()
