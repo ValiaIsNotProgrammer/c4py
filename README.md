@@ -62,8 +62,9 @@
 1.    docker-compose up
    
    
-После установки, переходим на https://t.me/TruePositiveTestTaskBot
-Прописывает боту в сообщениях /start
+* После установки, переходим на https://t.me/TruePositiveTestTaskBot
+* Прописывает боту в сообщениях `/start`
+
 
 
 
