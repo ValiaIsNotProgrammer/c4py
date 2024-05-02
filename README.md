@@ -26,6 +26,11 @@
 - [x] Клиент-сервер апликуха, где сервер - REST FULL API
 - [x] Обработка ошибок при получении скриншота, которые уведомляют пользователя о проблемности сайта
 
+
+
+#### Видео с установкой и просмотром работоспособности: https://vk.com/s/v1/doc/Y3-w7TnBJo9BER6wO_u9RMjtiVSpOl9kZPuMuMDxYyePkT2n3U4 (через youtube, к сожалению, у меня, почему-то, перестало обрабатываться видео: https://vms.drweb.ru/online/ - тут можно проверить ссылку)
+
+
 # Подготовка
 1.    git clone https://github.com/ValiaIsNotProgrammer/truepositive_test_task
    
