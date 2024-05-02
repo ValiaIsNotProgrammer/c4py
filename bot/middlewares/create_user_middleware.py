@@ -4,13 +4,17 @@ from aiogram.dispatcher.middlewares.base import BaseMiddleware
 from aiogram.types import Message
 from loguru import logger
 
-from bot.model import BotUser
-from bot.utils.connector import api_connector
-from bot.config import DEFAULT_BOT_LANGUAGE
+from model import BotUser
+from utils.connector import api_connector
+from config import DEFAULT_BOT_LANGUAGE
 
 # TODO: оптимизировать запросы к БД через API (можно создать класс Repo или использовать кеш)
 
 class CreateUserMiddleware(BaseMiddleware):
+    """
+    Middleware для создания пользователя
+    Используется только при команде /start
+    """
     async def __call__(
         self,
         handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
@@ -25,6 +29,7 @@ class CreateUserMiddleware(BaseMiddleware):
         return await handler(event, data)
 
     async def _create_user(self, user_id: int):
+        "Метод для создания пользователя"
         user = BotUser(id=user_id, language=DEFAULT_BOT_LANGUAGE)
         logger.trace(f"Created user model {user}")
         await api_connector.create_user(user)
