@@ -32,9 +32,13 @@
 
 
 # Подготовка
-1.    git clone https://github.com/ValiaIsNotProgrammer/truepositive_test_task
+1.  ```bash
+    git clone https://github.com/ValiaIsNotProgrammer/truepositive_test_task
+    ```
    
-2.    cd truepositive_test_task/
+2.  ```bash
+    cd truepositive_test_task/
+    ```
    
 
 # Установка (не через контейнеры)
