@@ -27,7 +27,7 @@ def log_request_data(func):
 
 class BaseConnector:
     """
-    Базовый класс для на низком уровне с запросами API сервера
+    Базовый класс для запросов API сервера на низком уровне
     """
 
     def __init__(self, backend_url: str = BACKEND_URL):
