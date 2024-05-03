@@ -19,6 +19,7 @@ class ScreenshotSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         """
         При инициализации класса мы динамически меняем uploaded_at, process_time и image.name, т.к. создаем модель внутри ручки
+        uploaded_at нам важно сделать здесь, т.к. потом она будет использоваться в image.name
         """
         super().__init__(*args, **kwargs)
         try:
