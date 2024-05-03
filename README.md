@@ -45,7 +45,7 @@
 
 # Установка (не через контейнеры)
 1.  Установите [poetry](https://python-poetry.org/)
-2.  В .env файле поменяйте BACKEND_URL="http://localhost:8000/" и POSTGRES_HOST="localhost"
+2.  В .env файле поменяйте `BACKEND_URL="http://localhost:8000/"` и `POSTGRES_HOST="localhost"`
 3.  ```bash
     psql -U postgres -c "CREATE DATABASE truepositive;"
     ```
